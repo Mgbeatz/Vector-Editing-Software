@@ -1,0 +1,602 @@
+/* Reset + base layout */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #1e1e1e;
+  color: #ddd;
+}
+
+
+
+/* Menu bar */
+.menu-bar {
+  display: flex;
+  background: #2c2c2c;
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 14px;
+  z-index: 100;
+}
+.menu {
+  position: relative;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #333;
+  border: 1px solid #444;
+  list-style: none;
+  padding: 0;
+  min-width: 140px;
+  z-index: 1000;
+}
+
+.menu:hover .dropdown {
+  display: block;
+}
+
+.dropdown li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+
+
+.dropdown li:hover {
+  background-color: #555;
+}
+
+
+
+
+
+/* Editor layout */
+.editor {
+  display: flex;
+  width: 100%;
+  height: calc(100% - 35px); /* Leave room for menu bar */
+  position: relative;
+}
+
+
+
+
+.tool-panel {
+  width: 60px;
+  background: #444;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  gap: 10px;
+  position: relative;
+}
+
+
+
+
+
+.tool-panel button {
+
+  background: #555;
+  width: 30px;        /* Change this value as desired */
+  height: 30px;
+  border: none;
+  padding: 12px;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  position: relative;
+}
+
+
+
+
+
+
+.tool-panel button:hover {
+  background: #666;
+}
+
+.tool-panel button[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+  font-size: 12px;
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: 20;
+}
+
+
+
+/* 🌐 Grid snapping background */
+.canvas-container.grid-visible {
+  background-image:
+    linear-gradient(to right, #ccc 1px, transparent 1px),
+    linear-gradient(to bottom, #ccc 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+
+/* 🎯 Centered canvas layout */
+.canvas-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  border: 1px solid #ccc;
+  overflow: auto;
+  position: relative;
+}
+
+canvas {
+  border: 1px solid #ccc;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* 📐 Alignment panel */
+.alignment-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  transform: translate(40%);
+  top: 20px;
+  margin: 10px;
+  z-index: 1000;
+  
+
+}
+
+
+
+.alignment-panel button {
+  background: #444;
+  color: white;
+  border: none;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 4px;
+}
+
+.alignment-panel button:hover {
+  background: #666;
+}
+
+
+
+
+
+
+
+
+
+.snapping-dropdown {
+  position: absolute;
+  top: 20px;
+  left: 60%;
+  transform: translateX(-50%);
+  z-index: 25;
+}
+
+.snapping-dropdown button {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.snapping-options {
+  background: #222;
+  border: 1px solid #444;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 6px;
+  position: absolute;
+  width: 180px;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.snapping-options label {
+  font-size: 14px;
+  color: #fff;
+  display: block;
+}
+
+.snapping-options.show {
+  display: flex;
+}
+
+
+
+
+
+
+
+
+
+
+/* 🅰️ Text Controls Panel */
+.text-panel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: absolute;
+  top: 35px;
+  right: 40px;
+  background: #333;
+  padding: 8px;
+  border-radius: 6px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+}
+
+.text-panel select,
+.text-panel input {
+  padding: 4px;
+  border: none;
+  border-radius: 3px;
+}
+
+.text-panel button {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 5px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.text-panel select,
+.text-panel input {
+  padding: 4px;
+  border: none;
+  border-radius: 3px;
+  background: #222;
+  color: white;
+}
+
+
+
+
+
+
+
+
+
+
+/* 📦 Layers + controls */
+.side-panel {
+  width: 230px;
+  max-height: 95%;
+  background: #444;
+  padding: 10px;
+  overflow-y: auto;
+  border-left: 1px solid #444;
+}
+
+
+
+
+.side-panel h3 {
+  margin-bottom: 10px;
+}
+
+
+#layers {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  
+}
+
+#layers li {
+  padding: 6px;
+  background: #333;
+  margin-bottom: 5px;
+  cursor: pointer;
+  border: 1px solid #444;
+}
+
+
+
+
+#layers li:hover {
+  background-color: #8b8b8b;
+}
+
+
+
+
+
+
+
+.effects-panel {
+  padding: 10px;
+  background: #1c1c1c;
+  color: white;
+  border-top: 1px solid #333;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.effects-panel label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.effects-panel input[type="checkbox"],
+.effects-panel input[type="color"],
+.effects-panel input[type="range"] {
+  margin-left: 5px;
+}
+
+.slider-group {
+  margin-top: 10px;
+  border-top: 1px solid #333;
+  padding-top: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+.effect-presets {
+  margin-top: 10px;
+  border-top: 1px solid #333;
+  padding-top: 10px;
+}
+
+.effect-presets input,
+.effect-presets select {
+  margin-top: 5px;
+  width: 100%;
+  padding: 4px;
+  background: #222;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 3px;
+}
+
+.effect-presets button {
+  margin-top: 5px;
+  width: 100%;
+  padding: 6px;
+  background: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+.panel-separator {
+  margin: 12px 0;
+  border: 0;
+  height: 1px;
+  background: #444;
+}
+
+.color-controls {
+  font-size: 0.9em;
+}
+
+.color-controls h4.color-heading {
+  margin: 0 0 10px;
+  font-size: 0.95em;
+  color: #ccc;
+}
+
+.color-controls label {
+  display: block;
+  margin-bottom: 10px;
+  color: #ccc;
+}
+
+.color-controls input[type="color"] {
+  width: 100%;
+  height: 32px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+
+
+
+.blend-mode-control {
+  margin-top: 15px;
+  color: #ccc;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.blend-mode-control label {
+  margin-bottom: 5px;
+}
+
+.blend-mode-control select {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  color: #ddd;
+  padding: 6px;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+}
+
+.blend-mode-control select:hover {
+  border-color: #555;
+}
+
+.blend-mode-control select:focus {
+  border-color: #0078d4;
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.3);
+}
+
+
+
+
+
+
+
+.properties-controls input[type="number"] {
+  margin-bottom: 5px;
+  height: 24px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*popup */
+
+
+
+
+.properties-controls {
+  border-top: 1px solid #444;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.properties-controls h4 {
+  margin: 0 0 8px 0;
+  color: #ccc;
+  font-size: 16px;
+}
+
+.properties-controls label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.properties-controls input[type="number"] {
+  background-color: #3c3c3c;
+  border: 1px solid #555;
+  color: #fff;
+  padding: 3px 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.calculator-panel {
+  border-top: 1px solid #444;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.calculator-panel h4 {
+  margin-bottom: 8px;
+  color: #ccc;
+  font-size: 16px;
+}
+
+#calcScreen {
+  width: 100%;
+  padding: 6px;
+  font-size: 14px;
+  background-color: #2d2d2d;
+  border: 1px solid #555;
+  color: #fff;
+  box-sizing: border-box;
+  margin-bottom: 6px;
+}
+
+.calc-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.calc-buttons button {
+  flex: 1;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  padding: 6px 0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.calc-buttons button:hover {
+  background-color: #666;
+}
+
+
+
+
+
+
+
+
+
+
+

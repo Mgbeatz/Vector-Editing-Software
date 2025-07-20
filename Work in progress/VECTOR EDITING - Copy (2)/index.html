@@ -1,0 +1,93 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vector Editor</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body class="=dark-mode">
+  <div class="menu-bar">
+    <div class="menu">File
+      <ul class="dropdown">
+        <li onclick="newFile()">New</li>
+        <li onclick="loadFile()">Open</li>
+        <li onclick="saveFile()">Save</li>
+        <li onclick="exportSVG()">Export SVG</li>
+        <li onclick="importImage()">Import Image</li>
+        <input type="file" id="pdfInput" accept=".pdf" style="display:none" onchange="importPDF(event)">
+        <li onclick="document.getElementById('pdfInput').click()">Import PDF</li>
+        <li onclick="exitApp()">Exit</li>
+      </ul>
+    </div>
+    <div class="menu">Edit
+      <ul class="dropdown">
+        <li onclick="undo()">Undo (Ctrl+Z)</li>
+        <li onclick="redo()">Redo (Ctrl+Y)</li>
+        <li onclick="copy()">Copy (Ctrl+C)</li>
+        <li onclick="paste()">Paste (Ctrl+V)</li>
+        <li onclick="group()">Group (Ctrl+G)</li>
+        <li onclick="deleteObject()">Delete (Del)</li>
+      </ul>
+    </div>
+    <div class="menu">View</div>
+    <div class="menu">Window</div>
+    <div class="menu">Help</div>
+  </div>
+
+  <div class="alignment-panel draggable" id="alignment-panel">
+    <button onclick="alignObjects('left')" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
+    <button onclick="alignObjects('center')" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
+    <button onclick="alignObjects('right')" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+    <button onclick="alignObjects('top')" title="Align Top"><i class="fa-solid fa-align-top"></i></button>
+    <button onclick="alignObjects('middle')" title="Align Middle"><i class="fa-solid fa-align-middle"></i></button>
+    <button onclick="alignObjects('bottom')" title="Align Bottom"><i class="fa-solid fa-align-bottom"></i></button>
+    <button onclick="addStickyNote()">🗒️ Comment</button>
+  </div>
+
+  <div class="editor">
+    <div class="tool-panel draggable"id="tool-panel">
+      <button onclick="selectTool('select')" title="Select (V)"><i class="fa-solid fa-mouse-pointer"></i></button>
+      <button onclick="selectTool('pen')" title="Pen (P)"><i class="fa-solid fa-pen"></i></button>
+      <button onclick="selectTool('rect')" title="Rectangle (R)"><i class="fa-solid fa-square"></i></button>
+      <button onclick="selectTool('circle')" title="Circle (C)"><i class="fa-solid fa-circle"></i></button>
+      <button onclick="selectTool('polygon')" title="Polygon"><i class="fa-solid fa-draw-polygon"></i></button>
+      <button onclick="selectTool('line')" title="Line"><i class="fa-solid fa-minus"></i></button>
+      <button onclick="selectTool('text')" title="Text (T)"><i class="fa-solid fa-font"></i></button>
+      <button onclick="selectTool('lasso')" title="Lasso"><i class="fa-solid fa-lasso"></i></button>
+      <button id="toggleGridBtn" onclick="toggleGrid()" title="Toggle Grid (G)">
+        <i class="fa-solid fa-border-all"></i>
+      </button>
+      <button onclick="groupSelected()">Group</button>
+      <button onclick="ungroupSelected()">Ungroup</button>
+    </div>
+
+   <div class="canvas-container" id="canvas-container">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="side-panel draggable" id="layer-panel">
+      <h3>Layers</h3>
+      <ul id="layers"></ul>
+      <div class="color-controls">
+        <label>Fill: <input type="color" id="fillColor" onchange="updateColor('fill')"/></label>
+        <label>Stroke: <input type="color" id="strokeColor" onchange="updateColor('stroke')"/></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+<script src="js/app.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/layers.js"></script>
+  <script src="js/fileMenu.js"></script>
+  <script src="js/editMenu.js"></script>
+  <script src="js/comments.js"></script>
+  <script src="js/responsive.js"></script>
+  <script src="js/floatingPanels.js"></script>
+</body>
+</html>
