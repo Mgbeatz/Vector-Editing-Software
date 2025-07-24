@@ -1,0 +1,367 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vector Editor</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
+
+</head>
+<body class="=dark-mode">
+  <div class="menu-bar"> 
+  <div class="menu">File
+    <ul class="dropdown">
+      <li onclick="newFile()">New</li>
+      <li onclick="loadFile()">Open</li>
+      <li onclick="saveFile()">Save</li>
+      <li onclick="exportSVG()">Export SVG</li>
+      <li onclick="exportCanvas('png')">Export PNG</li>
+      <li onclick="exportCanvas('jpeg')">Export JPEG</li>
+      <li onclick="importImage()">Import Image</li>
+      <li onclick="document.getElementById('pdfInput').click()">Import PDF</li>
+      <li onclick="exitApp()">Exit</li>
+    </ul>
+    <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+
+    <input type="file" id="pdfInput" accept=".pdf" style="display:none" onchange="importPDF(event)">
+  </div>
+
+  <div class="menu">Edit
+    <ul class="dropdown">
+      <li onclick="undo()">Undo (Ctrl+Z)</li>
+      <li onclick="redo()">Redo (Ctrl+Y)</li>
+      <li onclick="copy()">Copy (Ctrl+C)</li>
+      <li onclick="paste()">Paste (Ctrl+V)</li>
+      <li onclick="group()">Group (Ctrl+G)</li>
+      <li onclick="deleteObject()">Delete (Del)</li>
+    </ul>
+  </div>
+
+  <div class="menu">View</div>
+  <div class="menu">Window</div>
+  <div class="menu">Help</div>
+</div>
+
+
+
+  <div class="alignment-panel draggable" id="alignment-panel">
+    <button onclick="alignObjects('left')" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
+    <button onclick="alignObjects('center')" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
+    <button onclick="alignObjects('right')" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+    <button onclick="alignObjects('top')" title="Align Top"><i class="fa-solid fa-align-justify"></i></button>
+    <button onclick="alignObjects('middle')" title="Align Middle"><i class="fa-solid fa-align-center"></i></button>
+    <button onclick="alignObjects('bottom')" title="Align Bottom"><i class="fa-solid fa-align-justify"></i></button>
+    <button onclick="addStickyNote('comment')" title="Comment"><i class="fa-solid fa-solid fa-commenting"></i></button>
+  </div>
+
+
+
+
+<div class="snapping-dropdown">
+  <button id="snappingToggleBtn">Line Tool Snapping Options ▾</button>
+  <div id="snappingOptions" class="snapping-options hidden">
+    <label><input type="checkbox" id="snap-endpoint" checked /> Endpoint</label>
+    <label><input type="checkbox" id="snap-midpoint" /> Midpoint</label>
+    <label><input type="checkbox" id="snap-radius" /> Circle Radius</label>
+    <label><input type="checkbox" id="snap-tangent" /> Tangent</label>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="text-panel" id="text-panel">
+  <select id="fontFamily" style="font-family: Arial;">
+    <option value="Arial" style="font-family: Arial;">Arial</option>
+    <option value="Courier New" style="font-family: 'Courier New';">Courier New</option>
+    <option value="Georgia" style="font-family: Georgia;">Georgia</option>
+    <option value="Helvetica" style="font-family: Helvetica;">Helvetica</option>
+    <option value="Times New Roman" style="font-family: 'Times New Roman';">Times New Roman</option>
+    <option value="Verdana" style="font-family: Verdana;">Verdana</option>
+  </select>
+
+  <input type="number" id="fontSize" min="8" max="200" value="32" />
+
+  <button id="boldBtn"><b>B</b></button>
+  <button id="italicBtn"><i>I</i></button>
+  <button id="underlineBtn"><u>U</u></button>
+  <button id="strikeBtn"><s>S</s></button>
+
+  <button id="alignLeft" title="Align Left"><i class="fa-solid fa-align-left"></i></button>
+  <button id="alignCenter" title="Align Center"><i class="fa-solid fa-align-center"></i></button>
+  <button id="alignRight" title="Align Right"><i class="fa-solid fa-align-right"></i></button>
+</div>
+
+
+
+
+
+
+  <div class="editor">
+    <div class="tool-panel draggable"id="tool-panel">
+      <button onclick="selectTool('select')" title="Select (V)"><i class="fa-solid fa-mouse-pointer"></i></button>
+      <button onclick="selectTool('pen')" title="Pen (P)"><i class="fa-solid fa-pen"></i></button>
+      <button onclick="selectTool('rect')" title="Rectangle (R)"><i class="fa-solid fa-square"></i></button>
+      <button onclick="selectTool('circle')" title="Circle (C)"><i class="fa-solid fa-circle"></i></button>
+      <button onclick="selectTool('polygon')" title="Polygon"><i class="fa-solid fa-draw-polygon"></i></button>
+      <button onclick="selectTool('line')" title="Line"><i class="fa-solid fa-minus"></i></button>
+      <button onclick="selectTool('text')" title="Text (T)"><i class="fa-solid fa-font"></i></button>
+      <button onclick="selectTool('lasso')" title="Lasso"><i class="fa-solid fa-lasso"></i></button>
+      <button id="toggleGridBtn" onclick="toggleGrid()" title="Toggle Grid (G)">
+        <i class="fa-solid fa-border-all"></i>
+      </button>
+
+
+      <button onclick="groupSelected('groupSelected')" title="groupSelected"><i class="fa-solid fa-book"></i>
+      <button onclick="ungroupSelected('ungroupSelected')" title="ungroupSelected"><i class="fa-solid fa-book-open"></i>
+      <button onclick="selectTool('direct-select')" title="Direct select"><i class="fa-solid fa-mouse-pointer"></i>
+
+        
+    </div>
+
+ <div class="canvas-container" id="canvas-container">
+      <canvas id="canvas"></canvas>
+    </div>
+
+
+
+<div id="side-wrapper">
+  <div id="resizer"></div>
+  <div class="side-panel draggable" id="layer-panel">
+
+  
+  <div class="side-panel draggable" id="layer-panel"> 
+  <h3>Layers</h3>
+  <ul id="layers"></ul>
+
+
+<br> </br>
+
+
+
+
+
+
+  <!-- Separator -->
+  <hr class="panel-separator" />
+
+  <!-- Color Picker Panel -->
+ <div class="color-controls">
+  <h4 class="color-heading">Color Picker</h4>
+
+  <label for="fillColor">
+    Fill:
+    <input type="color" id="fillColor" value="#333333" onchange="updateColor('fill')" />
+  </label>
+
+  <label for="strokeColor">
+    Stroke:
+    <input type="color" id="strokeColor" value="#333333" onchange="updateColor('stroke')" />
+  </label>
+
+
+  
+  <!-- Stroke Width -->
+  <label for="strokeWidth" style="margin-top: 10px; display: block; color: #ccc;">
+    Stroke Width:
+    <input
+      type="range"
+      id="strokeWidth"
+      min="0"
+      max="20"
+      step="0.5"
+      value="1"
+      onchange="updateStrokeWidth(this.value)"
+      style="width: 100%;"
+    />
+  </label>
+
+  <!-- Opacity -->
+  <label for="opacity" style="margin-top: 10px; display: block; color: #ccc;">
+    Opacity:
+    <input
+      type="range"
+      id="opacity"
+      min="0"
+      max="1"
+      step="0.01"
+      value="1"
+      onchange="updateOpacity(this.value)"
+      style="width: 100%;"
+    />
+  </label>
+
+
+  <br> </br>
+
+
+
+
+
+<!-- Blending Mode -->
+<div class="blend-mode-control">
+  <label for="blendMode">Blending Mode:</label>
+  <select id="blendMode" onchange="updateBlendMode(this.value)">
+    <option value="normal">Normal</option>
+    <option value="multiply">Multiply</option>
+    <option value="screen">Screen</option>
+    <option value="overlay">Overlay</option>
+    <option value="darken">Darken</option>
+    <option value="lighten">Lighten</option>
+    <option value="color-dodge">Color Dodge</option>
+    <option value="color-burn">Color Burn</option>
+    <option value="hard-light">Hard Light</option>
+    <option value="soft-light">Soft Light</option>
+    <option value="difference">Difference</option>
+    <option value="exclusion">Exclusion</option>
+    <option value="hue">Hue</option>
+    <option value="saturation">Saturation</option>
+    <option value="color">Color</option>
+    <option value="luminosity">Luminosity</option>
+  </select>
+</div>
+
+
+
+<br> </br>
+
+
+
+
+<div class="properties-controls">
+  <h4>Properties</h4>
+  <label>
+    Left:
+    <input type="number" id="propLeft" onchange="updateProperty('left')" />
+  </label>
+  <label>
+    Top:
+    <input type="number" id="propTop" onchange="updateProperty('top')" />
+  </label>
+  <label>
+    Width:
+    <input type="number" id="propWidth" onchange="updateProperty('width')" />
+  </label>
+  <label>
+    Height:
+    <input type="number" id="propHeight" onchange="updateProperty('height')" />
+  </label>
+  <label>
+    Angle:
+    <input type="number" id="propAngle" onchange="updateProperty('angle')" />
+  </label>
+</div>
+
+
+
+
+
+<div class="calculator-panel">
+  <h4>Calculator</h4>
+  <input type="text" id="calcScreen" placeholder="Enter expression" />
+  <div class="calc-buttons">
+    <button onclick="evaluateCalc()">=</button>
+    <button onclick="resetCalc()">C</button>
+  </div>
+</div>
+
+
+
+<div class="effects-panel">
+  <h3>Effects</h3>
+
+  <label><input type="checkbox" id="dropShadowToggle"> Drop Shadow</label>
+  <label><input type="checkbox" id="glowToggle"> Glow</label>
+  <label><input type="checkbox" id="outerGlowToggle"> Outer Glow</label>
+
+  <div class="slider-group">
+    <label>Blur: <input type="range" id="blurSlider" min="0" max="50" value="10"></label>
+    <label>Offset X: <input type="range" id="offsetXSlider" min="-50" max="50" value="5"></label>
+    <label>Offset Y: <input type="range" id="offsetYSlider" min="-50" max="50" value="5"></label>
+    <label>Opacity: <input type="range" id="opacitySlider" min="0" max="1" step="0.1" value="0.5"></label>
+    <label>Shadow Color: <input type="color" id="shadowColorPicker" value="#000000"></label>
+  </div>
+
+  <!-- <label>Overlay Color:
+    <input type="color" id="overlayColor" value="#ff0000">
+    <button id="applyOverlay">Apply</button>
+  </label>
+
+  <button id="clearEffectsBtn" style="margin-top: 10px;">Clear All Effects</button>
+</div> -->
+
+<div class="effect-presets">
+  <h4>Effects Presets</h4>
+  <select id="presetSelect">
+    <option value="">-- Select Preset --</option>
+  </select>
+  <input type="text" id="presetName" placeholder="Preset Name">
+  <button id="savePresetBtn">Save Preset</button>
+</div>
+
+
+<div id="import-history" style="position: fixed; bottom: 10px; right: 10px; 
+  background: rgba(0,0,0,0.7); color: white; padding: 10px; max-width: 300px; 
+  max-height: 150px; overflow-y: auto; font-family: monospace; font-size: 12px; border-radius: 4px;">
+  <strong>Import History</strong>
+  <ul id="import-history-list" style="padding-left: 15px; margin: 5px 0;"></ul>
+</div>
+
+</div>
+</div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- Scripts -->
+<script src="js/app.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/layers.js"></script>
+  <script src="js/fileMenu.js"></script>
+  <script src="js/editMenu.js"></script>
+  <script src="js/comments.js"></script>
+  <script src="js/responsive.js"></script>
+  <script src="js/floatingPanels.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/calculator.js"></script>
+</body>
+</html>
